@@ -1,4 +1,4 @@
-use image::{io::Reader as ImageReader, DynamicImage, ImageError, ImageOutputFormat};
+use image::{io::Reader as ImageReader, ImageError, ImageOutputFormat};
 use std::io::Cursor;
 
 fn main() -> Result<(), ImageError> {
@@ -8,9 +8,11 @@ fn main() -> Result<(), ImageError> {
     img.write_to(&mut Cursor::new(&mut bytes), ImageOutputFormat::Png)?;
 
     let rgb = img.to_rgb8();
-    let no_alpha = DynamicImage::ImageRgb8(rgb);
 
-    no_alpha.save("image/no_alpha.jpg")?;
+    rgb.save("image/no_alpha.jpg")?;
+
+    let pixel = rgb.get_pixel(32, 52);
+    println!("Pixel (32, 52) : {:?}", pixel);
 
     Ok(())
 }
