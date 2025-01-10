@@ -1,5 +1,10 @@
 pub fn palette(image: &mut DynamicImage, palette: Vec<[u8; 3]>) -> image::RgbImage {
     let mut rgb_image = image.to_rgb8();
+
+    if palette.is_empty() {
+        return rgb_image;
+    }
+
     for (_x, _y, pixel) in rgb_image.enumerate_pixels_mut() {
         let mut min_distance = 255.0 * 3.0;
         let mut best_color = [0, 0, 0];
