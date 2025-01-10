@@ -4,6 +4,7 @@ include!("../src/white.rs");
 include!("../src/no_alpha.rs");
 include!("../src/palette.rs");
 include!("../src/dithering.rs");
+include!("../src/tramage_bayer.rs");
 
 fn main() -> Result<(), ImageError> {
     let img = ImageReader::open("image/BUTInfo.jpg")?.decode()?;
@@ -48,6 +49,10 @@ fn main() -> Result<(), ImageError> {
     let mut dithering_mono = img.clone();
     let dithering_mono_img = dithering(&mut dithering_mono, None, None);
     dithering_mono_img.save("image/dithering.jpg")?;
+
+    let mut tramage = img.clone();
+    let tramage_img = tramage_bayer(&mut tramage, 3, None, None);
+    tramage_img.save("image/tramage.jpg")?;
 
     Ok(())
 }
