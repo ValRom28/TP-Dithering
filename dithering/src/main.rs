@@ -2,6 +2,7 @@ use image::{io::Reader as ImageReader, ImageError};
 include!("../src/seuils.rs");
 include!("../src/white.rs");
 include!("../src/no_alpha.rs");
+include!("../src/palette.rs");
 
 fn main() -> Result<(), ImageError> {
     let img = ImageReader::open("image/BUTInfo.jpg")?.decode()?;
@@ -22,6 +23,22 @@ fn main() -> Result<(), ImageError> {
     let mut seuil_color = img.clone();
     let seuil_color_img = seuillage(&mut seuil_color, 128, Some([0, 0, 255]), Some([0, 255, 0]));
     seuil_color_img.save("image/seuil_color.jpg")?;
+
+    let mut pal = img.clone();
+    let palette_img = palette(
+        &mut pal,
+        vec![
+            [0, 0, 0],       // Noir
+            [255, 255, 255], // Blanc
+            [255, 0, 0],     // Rouge
+            [0, 255, 0],     // Vert
+            [0, 0, 255],     // Bleu
+            [255, 255, 0],   // Jaune
+            [255, 0, 255],   // Magenta
+            [0, 255, 255],   // Cyan
+        ],
+    );
+    palette_img.save("image/palette.jpg")?;
 
     Ok(())
 }
