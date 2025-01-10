@@ -32,6 +32,34 @@ pour calculer la distance entre deux couleurs on utilise la formule suivante : `
 
 Si on a une pallette vide lors du dithering on ne peut pas appliquer le dithering car on ne peut pas trouver la couleur la plus proche de la couleur actuelle du pixel. Donc on regarde si notre palette est vide et si elle l'est on ne fait pas de dithering on retourne l'image original.
 
+### question 13
+
+On sait que `B0=0`, `B1= 1/4 * MAT((0,2),(3,1))`, B2 = (1 / 16) \*`
+
+|   0 |  12 |   3 |  15 |
+| --: | --: | --: | --: |
+|   8 |   4 |  11 |   7 |
+|   2 |  14 |   1 |  13 |
+|  10 |   6 |   9 |   5 |
+
+et que `BN+1 = 1/4 * ((4 * Bn, 4 * Bn + 2 * Un), (4 * Bn + 3 * Un, Bn + Un))` et `Un` est la matrice de Bayer d'ordre taille `2^n x 2^n`.
+
+Donc:
+
+`B3 = 1/4 * ((4 * B2, 4 * B2 + 2 * U2), (4 * B2 + 3 * U2, B2 + U2))`
+
+B3 =
+(1/64) \*
+| 0 | 3 | 0.75 | 3.75 | 2 | 5 | 2.75 | 5.75 |
+|----:|----:|------:|------:|----:|----:|------:|------:|
+| 2 | 1 | 2.75 | 1.75 | 4 | 3 | 4.75 | 3.75 |
+| 0.5 | 3.5 | 0.25 | 3.25 | 2.5 | 5.5 | 2.25 | 5.25 |
+| 2.5 | 1.5 | 2.25 | 1.25 | 4.5 | 3.5 | 4.25 | 3.25 |
+| 3 | 6 | 3.75 | 6.75 | 2 | 5 | 2.75 | 5.75 |
+| 5 | 4 | 5.75 | 4.75 | 4 | 3 | 4.75 | 3.75 |
+| 3.5 | 6.5 | 3.25 | 6.25 | 2.5 | 5.5 | 2.25 | 5.25 |
+| 5.5 | 4.5 | 5.25 | 4.25 | 4.5 | 3.5 | 4.25 | 3.25 |
+
 ## Annexe
 
 [Grayscale](https://support.ptc.com/help/mathcad/r10.0/en/index.html#page/PTC_Mathcad_Help/example_grayscale_and_color_in_images.html)
