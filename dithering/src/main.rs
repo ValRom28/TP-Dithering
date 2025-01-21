@@ -5,6 +5,7 @@ include!("../src/no_alpha.rs");
 include!("../src/palette.rs");
 include!("../src/dithering.rs");
 include!("../src/tramage_bayer.rs");
+include!("../src/diffusion_erreur.rs");
 
 fn main() -> Result<(), ImageError> {
     let img = ImageReader::open("image/BUTInfo.jpg")?.decode()?;
@@ -53,6 +54,36 @@ fn main() -> Result<(), ImageError> {
     let mut tramage = img.clone();
     let tramage_img = tramage_bayer(&mut tramage, 3, None, None);
     tramage_img.save("image/tramage.jpg")?;
+
+    let mut diffusion = image::imageops::grayscale(&rgb);
+    let diffusion_img = diffusion_erreur_noir_blanc(&mut diffusion);
+    diffusion_img.save("image/diffusion.jpg")?;
+
+    let mut diffusion_palette = img.clone();
+    let diffusion_palette_img = diffusion_erreur_palette(
+        &mut diffusion_palette,
+        vec![
+            [0, 0, 0],       // Noir
+            [255, 255, 255], // Blanc
+            [255, 0, 0],     // Rouge
+            [0, 255, 0],     // Vert
+            [0, 0, 255],     // Bleu
+        ],
+    );
+    diffusion_palette_img.save("image/diffusion_palette.jpg")?;
+
+    let mut diffusion_floyd_steinberg = img.clone();
+    let diffusion_floyd_steinberg_img = diffusion_erreur_palette(
+        &mut diffusion_floyd_steinberg,
+        vec![
+            [0, 0, 0],       // Noir
+            [255, 255, 255], // Blanc
+            [255, 0, 0],     // Rouge
+            [0, 255, 0],     // Vert
+            [0, 0, 255],     // Bleu
+        ],
+    );
+    diffusion_floyd_steinberg_img.save("image/diffusion_floyd_steinberg.jpg")?;
 
     Ok(())
 }

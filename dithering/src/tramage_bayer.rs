@@ -36,7 +36,7 @@ pub fn tramage_bayer(
     for (x, y, pixel) in rgb_image.enumerate_pixels_mut() {
         let pixel_luminosity =
             0.299 * pixel[0] as f32 + 0.587 * pixel[1] as f32 + 0.114 * pixel[2] as f32;
-        let threshold = bayer_matrix[(x as usize % matrix_size)][(y as usize % matrix_size)] as f32
+        let threshold = bayer_matrix[x as usize % matrix_size][y as usize % matrix_size] as f32
             / (matrix_size * matrix_size) as f32;
         if pixel_luminosity / 255.0 > threshold {
             *pixel = image::Rgb(color1);
