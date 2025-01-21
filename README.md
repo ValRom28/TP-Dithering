@@ -60,6 +60,14 @@ B3 =
 | 3.5 | 6.5 | 3.25 | 6.25 | 2.5 | 5.5 | 2.25 | 5.25 |
 | 5.5 | 4.5 | 5.25 | 4.25 | 4.5 | 3.5 | 4.25 | 3.25 |
 
+### question 14
+
+le type de donné que nous avons choisie pour représenter la matrice de Bayer sont des vecteurs de vecteurs de u32. Nous avons choisi ce type de donnée car cela permet de représenter une matrice de Bayer de taille `2^n x 2^n` ou `n` est un entier. ` Vec<Vec<u32>>`.
+
+### question 17
+
+nous représentons l'erreur commmise par la diffusion d'erreur. Chaque pixel de l'image originale est comparé aux couleurs disponibles dans la palette. Si la couleur du pixel n'est pas dans la palette, on lui attribue la couleur la plus proche de la palette. Ensuite, on calcule l'erreur commise par la diffusion d'erreur en soustrayant la couleur du pixel à la couleur attribuée. Ensuite, on diffuse cette erreur sur les pixels voisins le pixel droit aura 50% de l'erreur `(x+1,y)(x+1,y)`et celui endessous `(x,y+1)`, On répète cette opération pour chaque pixel de l'image.
+
 ## Annexe
 
 [Grayscale](https://support.ptc.com/help/mathcad/r10.0/en/index.html#page/PTC_Mathcad_Help/example_grayscale_and_color_in_images.html)
