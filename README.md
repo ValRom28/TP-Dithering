@@ -68,6 +68,13 @@ le type de donné que nous avons choisie pour représenter la matrice de Bayer s
 
 nous représentons l'erreur commmise par la diffusion d'erreur. Chaque pixel de l'image originale est comparé aux couleurs disponibles dans la palette. Si la couleur du pixel n'est pas dans la palette, on lui attribue la couleur la plus proche de la palette. Ensuite, on calcule l'erreur commise par la diffusion d'erreur en soustrayant la couleur du pixel à la couleur attribuée. Ensuite, on diffuse cette erreur sur les pixels voisins le pixel droit aura 50% de l'erreur `(x+1,y)(x+1,y)`et celui endessous `(x,y+1)`, On répète cette opération pour chaque pixel de l'image.
 
+### question 20
+
+Pour représenter une matrice de diffusion d’erreur arbitraire nous réprésentons une matrice 2D ` Vec<Vec<u32>>` où chaque élément représente la proportion de l'erreur à diffuser à un pixel voisin spécifique.
+on définit la matrice de diffusion d'erreur que vous souhaitez utiliser.
+Pour chaque pixel, après avoir calculé l'erreur, ont répartie cette erreur aux pixels voisins selon les proportions indiquées par la matrice de diffusion d'erreur choisie.
+On mets l'erreur aux valeurs des pixels voisins.
+
 ## Annexe
 
 [Grayscale](https://support.ptc.com/help/mathcad/r10.0/en/index.html#page/PTC_Mathcad_Help/example_grayscale_and_color_in_images.html)
