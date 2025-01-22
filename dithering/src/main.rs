@@ -1,4 +1,7 @@
-use image::{io::Reader as ImageReader, ImageError};
+use argh::FromArgs;
+use image::ImageError;
+
+include!("../src/cli.rs");
 include!("../src/seuils.rs");
 include!("../src/white.rs");
 include!("../src/no_alpha.rs");
@@ -6,84 +9,63 @@ include!("../src/palette.rs");
 include!("../src/dithering.rs");
 include!("../src/tramage_bayer.rs");
 include!("../src/diffusion_erreur.rs");
+include!("../src/constants.rs");
 
 fn main() -> Result<(), ImageError> {
-    let img = ImageReader::open("image/BUTInfo.jpg")?.decode()?;
-    let rgb = no_alpha(&mut img.clone());
-    rgb.save("image/no_alpha.jpg")?;
+    let args: DitheringCli = argh::from_env();
+    let input = args.input;
+    let output = args.output;
+    let mode = args.mode;
 
-    let pixel = rgb.get_pixel(32, 52);
-    println!("Pixel (32, 52) : {:?}", pixel);
+    let image = image::open(&input)?;
 
-    let mut white = img.clone();
-    let semi_wight = semi_white(&mut white);
-    semi_wight.save("image/white.jpg")?;
-
-    let mut seuil = img.clone();
-    let seuil_img = seuillage(&mut seuil, 128, None, None);
-    seuil_img.save("image/seuil.jpg")?;
-
-    let mut seuil_color = img.clone();
-    let seuil_color_img = seuillage(&mut seuil_color, 128, Some([0, 0, 255]), Some([0, 255, 0]));
-    seuil_color_img.save("image/seuil_color.jpg")?;
-
-    let mut pal = img.clone();
-    let palette_img = palette(
-        &mut pal,
-        vec![
-            [0, 0, 0],       // Noir
-            [255, 255, 255], // Blanc
-            [255, 0, 0],     // Rouge
-            [0, 255, 0],     // Vert
-            [0, 0, 255],     // Bleu
-            [255, 255, 0],   // Jaune
-            [255, 0, 255],   // Magenta
-            [0, 255, 255],   // Cyan
-        ],
-    );
-    palette_img.save("image/palette.jpg")?;
-
-    let mut pal_vide = img.clone();
-    let palette_vide_img = palette(&mut pal_vide, vec![]);
-    palette_vide_img.save("image/palette_vide.jpg")?;
-
-    let mut dithering_mono = img.clone();
-    let dithering_mono_img = dithering(&mut dithering_mono, None, None);
-    dithering_mono_img.save("image/dithering.jpg")?;
-
-    let mut tramage = img.clone();
-    let tramage_img = tramage_bayer(&mut tramage, 3, None, None);
-    tramage_img.save("image/tramage.jpg")?;
-
-    let mut diffusion = image::imageops::grayscale(&rgb);
-    let diffusion_img = diffusion_erreur_noir_blanc(&mut diffusion);
-    diffusion_img.save("image/diffusion.jpg")?;
-
-    let mut diffusion_palette = img.clone();
-    let diffusion_palette_img = diffusion_erreur_palette(
-        &mut diffusion_palette,
-        vec![
-            [0, 0, 0],       // Noir
-            [255, 255, 255], // Blanc
-            [255, 0, 0],     // Rouge
-            [0, 255, 0],     // Vert
-            [0, 0, 255],     // Bleu
-        ],
-    );
-    diffusion_palette_img.save("image/diffusion_palette.jpg")?;
-
-    let mut diffusion_floyd_steinberg = img.clone();
-    let diffusion_floyd_steinberg_img = diffusion_erreur_palette(
-        &mut diffusion_floyd_steinberg,
-        vec![
-            [0, 0, 0],       // Noir
-            [255, 255, 255], // Blanc
-            [255, 0, 0],     // Rouge
-            [0, 255, 0],     // Vert
-            [0, 0, 255],     // Bleu
-        ],
-    );
-    diffusion_floyd_steinberg_img.save("image/diffusion_floyd_steinberg.jpg")?;
+    match mode {
+        Mode::NoAlpha(_) => {
+            let mut image = image;
+            let result = no_alpha(&mut image);
+            result.save(&output)?;
+        }
+        Mode::Seuils(args) => {
+            let mut image = image;
+            let seuil = args.seuil;
+            let color1 = get_color_from_name(&args.color1);
+            let color2 = get_color_from_name(&args.color2);
+            let result = seuillage(&mut image, seuil, color1, color2);
+            result.save(&output)?;
+        }
+        Mode::White(_) => {
+            let mut image = image;
+            let result = semi_white(&mut image);
+            result.save(&output)?;
+        }
+        Mode::Palette(args) => {
+            let mut image = image;
+            let nb_colors = args.nb_colors;
+            let result = palette(&mut image, PALETTE[0..nb_colors].to_vec());
+            result.save(&output)?;
+        }
+        Mode::Dithering(args) => {
+            let mut image = image;
+            let color1 = get_color_from_name(&args.color1);
+            let color2 = get_color_from_name(&args.color2);
+            let result = dithering(&mut image, color1, color2);
+            result.save(&output)?;
+        }
+        Mode::TramageBayer(args) => {
+            let mut image = image;
+            let color1 = get_color_from_name(&args.color1);
+            let color2 = get_color_from_name(&args.color2);
+            let result = tramage_bayer(&mut image, args.order, color1, color2);
+            result.save(&output)?;
+        }
+        Mode::DiffusionErreur(args) => {
+            let mut image = image;
+            let nb_colors = args.nb_colors;
+            let result =
+                diffusion_erreur_floyd_steinberg(&mut image, PALETTE[0..nb_colors].to_vec());
+            result.save(&output)?;
+        }
+    }
 
     Ok(())
 }
